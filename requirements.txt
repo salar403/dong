@@ -1,0 +1,29 @@
+#django ver
+Django==4.1.12
+
+#django utilities
+django-cors-headers==3.13.0
+djangorestframework==3.13.1
+
+#celery
+celery==5.2.7
+
+#web handler
+uvicorn==0.18.2
+
+#swagger
+drf-yasg==1.20.0
+
+#date & time
+persiantools==3.0.1
+
+#telegram
+python-telegram-bot==13.13
+
+#redis
+django-redis==5.2.0
+
+#postgres
+psycopg2-binary==2.9.3
+
+cryptography==39.0.1
