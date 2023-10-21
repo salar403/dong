@@ -1,0 +1,134 @@
+version: "3.3"
+
+services:
+  backend-dong:
+    container_name: backend-dong
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    environment:
+      PLATFORM: production
+      SWAGGER_URL: "https://dong.alinance.net"
+      API_HOST: "dong.alinance.net"
+      BACKEND_REDIS_HOST: "redis-dong"
+      BACKEND_POSTGRES_HOST: "postgres-dong"
+    command: bash -c "./manage.py migrate && uvicorn backend.asgi:application --host 0.0.0.0 --port 8000 --workers 1"
+    networks:
+      - dong-network
+    depends_on:
+      - redis-dong
+      - postgres-dong
+
+  redis-dong:
+    container_name: redis-dong
+    restart: always
+    image: redis:6.2.7
+    volumes:
+      - redis-dong-data:/data
+    networks:
+      - dong-network
+
+  postgres-dong:
+    container_name: postgres-dong
+    restart: always
+    image: postgres:14.4
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "postgres"
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-dong-data:/var/lib/postgresql/data
+    networks:
+      - dong-network
+
+  pgadmin-dong:
+    container_name: pgadmin-dong
+    restart: always
+    image: dpage/pgadmin4:6.9
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "salar403@pgadmin.com"
+      PGADMIN_DEFAULT_PASSWORD: "salamsalam48n6e2"
+      PGADMIN_LISTEN_PORT: "56874"
+    volumes:
+      - pgadmin-dong-data:/var/lib/pgadmin
+    networks:
+      - dong-network
+    depends_on:
+      - postgres-dong
+
+  nginx-dong:
+    container_name: nginx-dong
+    restart: always
+    image: nginx:1.23.1
+    volumes:
+      - ./serverconf/nginx/conf/:/etc/nginx/:ro
+      - ./serverconf/nginx/cert/:/ssl/:ro
+    ports:
+      - ${NODE_PORT}:443
+    networks:
+      - dong-network
+    depends_on:
+      - backend-dong
+      - pgadmin-dong
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 5m
+
+  celery-dong-main:
+    container_name: celery-dong-main
+    build:
+      context: "."
+      dockerfile: ./Dockerfile
+    restart: always
+    environment:
+      BACKEND_REDIS_HOST: "redis-dong"
+      BACKEND_POSTGRES_HOST: "postgres-dong"
+      PLATFORM: production
+    command: celery -A backend worker -l info -c 2 -Q main
+    networks:
+      - dong-network
+    depends_on:
+      - redis-dong
+      - postgres-dong
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 5m
+
+  celery-dong-beat:
+    container_name: celery-dong-beat
+    build:
+      context: "."
+      dockerfile: ./Dockerfile
+    restart: always
+    environment:
+      BACKEND_REDIS_HOST: "redis-dong"
+      BACKEND_POSTGRES_HOST: "postgres-dong"
+      PLATFORM: production
+    command: celery -A backend beat -l info
+    networks:
+      - dong-network
+    depends_on:
+      - redis-dong
+      - postgres-dong
+      - celery-dong-main
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 5m
+
+networks:
+  dong-network:
+    external: True
+
+volumes:
+  redis-dong-data:
+    external: True
+  pgadmin-dong-data:
+    external: True
+  postgres-dong-data:
+    external: True
