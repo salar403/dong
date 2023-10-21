@@ -1,1 +1,3 @@
 # dong
+
+Simple web backend to calculate what people should pay to each other after a trip or so...
