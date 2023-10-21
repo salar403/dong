@@ -1,7 +1,7 @@
 from django.urls import path
-from dong import views
+from user import views
 
-app_name = "dong"
+app_name = "user"
 
 urlpatterns = [
     # path("tes/t/", views.test.as_view(), name="test_Api"),

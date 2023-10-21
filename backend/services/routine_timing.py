@@ -3,7 +3,7 @@ from django.core.cache import caches
 from backend.customs.queryset import get_object_or_none
 from backend.environments import NODE_IP
 
-from dong.models import Node, RoutineTiming
+from user.models import Node, RoutineTiming
 
 cache = caches["routine_timing"]
 

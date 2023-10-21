@@ -31,7 +31,7 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
 
 INSTALLED_APPS = [
-    "dong",
+    "user",
     "rest_framework",
     "drf_yasg",
     "corsheaders",

@@ -8,7 +8,7 @@ app.conf.result_expires = 180
 
 app.conf.beat_schedule = {
     # "test_task": {
-    #     "task": "dong.tasks.test_task",
+    #     "task": "user.tasks.test_task",
     #     "schedule": 60 * 60,
     #     "options": {"queue": "main"},
     # },

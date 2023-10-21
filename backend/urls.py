@@ -12,7 +12,7 @@ def return_static(request, path, insecure=True, **kwargs):
 
 
 urlpatterns = [
-    path("/", include("dong.urls", namespace="public")),
+    path("/", include("user.urls", namespace="public")),
 ]
 swagger_urls = [
     item
